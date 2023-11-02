@@ -1,7 +1,7 @@
 package dominio;
 
-public class Menu {
-//
+public class Ticket {
+
 	
 	
 }

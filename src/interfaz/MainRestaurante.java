@@ -1,8 +1,10 @@
 package interfaz;
 
-public class Main {
+public class MainRestaurante {
 
 	public static void main(String[] args) {
+	
+		
 		
 	}
 
