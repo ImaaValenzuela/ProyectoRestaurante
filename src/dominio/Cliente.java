@@ -3,10 +3,9 @@ package dominio;
 import java.util.Arrays;
 
 public class Cliente {
-<<<<<<< HEAD
 	private String nombreCliente;
 	private Menu menu[];
-	private TipoPago tipoPago;
+	private TipoDePago tipoPago;
 	private double montoFinal;
 
 	public Cliente(String nombreCliente, int cantidadPlatos) {
@@ -36,11 +35,11 @@ public class Cliente {
 		return seAgrego;
 	}
 
-	public TipoPago getTipoPago() {
+	public TipoDePago getTipoPago() {
 		return tipoPago;
 	}
 
-	public void setTipoPago(TipoPago tipoPago) {
+	public void setTipoPago(TipoDePago tipoPago) {
 		this.tipoPago = tipoPago;
 	}
 	
@@ -61,51 +60,65 @@ public class Cliente {
 
 		double monto = 0;
 		for (int i = 0; i < this.menu.length; i++) {
-			monto = this.menu[i].getPrecioPlato() + this.menu[i].getPrecioBebida();
+			monto = this.menu[i].getPrecioDelPlato() + this.menu[i].getPrecioDeLaBebida();
 		}
 		return monto;
 
 	}
 
 	@Override
-	public String toString() {
+	
+	// TODO: toString con uso de Arrays
+	/* public String toString() {
 		return "Cliente [nombreCliente=" + nombreCliente + ", menu=" + Arrays.toString(menu) + "]";
+	}*/ 
+	
+	public String toString() {
+	    String clienteString = "Cliente: " + nombreCliente + "\n";
+	    String menuString = "Menú:\n";
+
+	    for (int i = 0; i < menu.length; i++) {
+	        Menu menuItem = menu[i];
+	        if (menuItem != null) {
+	            if (i > 0) {
+	                menuString += "-------------------------\n";
+	            }
+	            menuString += "Plato #" + (i + 1) + ":\n" + menuItem.toString() + "\n";
+	        }
+	    }
+
+	    return clienteString + menuString;
 	}
-=======
-	private String nombre;
-	private String pedido[];
-	private Menu menu;
-	private TipoDePago tipoDePago;
-	private final double APLICACION = 0.15;
-	private final double EFECTIVO = 0.20;
-	private final double TARJETA_CREDITO = 0.10;
-	private final double TRANSFERENCIA = 0;
->>>>>>> 99f03edaad6ecf260fe58f4d5138d4850121c302
+	
+	// TODO: Checkear  si agregamos o no
+	
+    /* private String nombre;
+    private String[] pedido;
+    private Menu menu;
+    private TipoDePago tipoDePago;
+    private final double APLICACION = 0.15;
+    private final double EFECTIVO = 0.20;
+    private final double TARJETA_CREDITO = 0.10;
+    private final double TRANSFERENCIA = 0;
 
-	public Cliente(String nombre, String[] pedido, Menu menu, TipoDePago tipoDePago) {
-		super();
-		this.nombre = nombre;
-		this.pedido = pedido;
-		this.menu = menu;
-		this.tipoDePago = tipoDePago;
-	}
+    public Cliente(String nombre, String[] pedido, Menu menu, TipoDePago tipoDePago) {
+        this.nombre = nombre;
+        this.pedido = pedido;
+        this.menu = menu;
+        this.tipoDePago = tipoDePago;
+    }
 
-	public double precioFinal() {
-		menu.precioTotal();
-		double precioFinal = 0.0;
-		if (this.tipoDePago.equals(tipoDePago.APLICACION)) {
-			precioFinal = menu.precioTotal() - (menu.precioTotal() * APLICACION);
+    public double precioFinal() {
+        double precioFinal = menu.precioTotal();
 
-		} else if (this.tipoDePago.equals(tipoDePago.EFECTIVO)) {
-			precioFinal = menu.precioTotal() - (menu.precioTotal() * EFECTIVO);
+        if (tipoDePago == TipoDePago.APLICACION) {
+            precioFinal -= precioFinal * APLICACION;
+        } else if (tipoDePago == TipoDePago.EFECTIVO) {
+            precioFinal -= precioFinal * EFECTIVO;
+        } else if (tipoDePago == TipoDePago.TARJETA_CREDITO) {
+            precioFinal += precioFinal * TARJETA_CREDITO;
+        }
 
-		} else if (this.tipoDePago.equals(tipoDePago.TARJETA_CREDITO)) {
-			precioFinal = menu.precioTotal() + (menu.precioTotal() * TARJETA_CREDITO);
-		} else {
-			precioFinal = menu.precioTotal();
-			
-		}
-		return precioFinal;
-
-	}
+        return precioFinal;
+    } */
 }

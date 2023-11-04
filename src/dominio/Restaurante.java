@@ -25,17 +25,17 @@ public class Restaurante {
 		return seAgrego;
 	}
 
-	public double obtenerPrecio(TipoPago tipoPago, double monto) {
+	public double obtenerPrecio(TipoDePago tipoPago, double monto) {
 
 		double montoFinal = monto;
 
-		if (tipoPago.equals(TipoPago.APLICACION)) {
+		if (tipoPago.equals(TipoDePago.APLICACION)) {
 			monto = monto * APLICACION;
 			montoFinal += monto;
-		} else if (tipoPago.equals(TipoPago.TARJETA_CREDITO)) {
+		} else if (tipoPago.equals(TipoDePago.TARJETA_CREDITO)) {
 			monto = monto * TARJETA;
 			montoFinal += monto;
-		} else if (tipoPago.equals(TipoPago.TRANSFERENCIA)) {
+		} else if (tipoPago.equals(TipoDePago.TRANSFERENCIA)) {
 			monto = monto * TRANSFERENCIA;
 			montoFinal += monto;
 		} else {
@@ -51,7 +51,7 @@ public class Restaurante {
 
 		for (int i = 0; i < cliente.getMenu().length; i++) {
 
-			montoSinRecargo = cliente.getMenu()[i].getPrecioPlato() + cliente.getMenu()[i].getPrecioBebida();
+			montoSinRecargo = cliente.getMenu()[i].getPrecioDelPlato() + cliente.getMenu()[i].getPrecioDeLaBebida();
 		}
 
 		double montoFinal = obtenerPrecio(cliente.getTipoPago(), montoSinRecargo);
