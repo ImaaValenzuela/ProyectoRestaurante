@@ -1,16 +1,20 @@
 package dominio;
 
-import java.util.Arrays;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 public class Cliente {
 	private String nombreCliente;
 	private Menu menu[];
-	private TipoDePago tipoPago;
+	private TipoPago tipoPago;
 	private double montoFinal;
+	private int numeroMesa;
+	private boolean estadoDePago;
 
-	public Cliente(String nombreCliente, int cantidadPlatos) {
+	public Cliente(String nombreCliente, int cantidadPlatos, int numeroDeMesa) {
 		this.nombreCliente = nombreCliente;
 		this.menu = new Menu[cantidadPlatos];
+		this.numeroMesa = numeroDeMesa;
 	}
 
 	public String getNombreCliente() {
@@ -35,14 +39,21 @@ public class Cliente {
 		return seAgrego;
 	}
 
-	public TipoDePago getTipoPago() {
+	public int getNumeroMesa() {
+		return numeroMesa;
+	}
+
+	public void setNumeroMesa(int numeroMesa) {
+		this.numeroMesa = numeroMesa;
+	}
+
+	public TipoPago getTipoPago() {
 		return tipoPago;
 	}
 
-	public void setTipoPago(TipoDePago tipoPago) {
+	public void setTipoPago(TipoPago tipoPago) {
 		this.tipoPago = tipoPago;
 	}
-	
 
 	public double getMontoAPagar() {
 		return montoFinal;
@@ -56,69 +67,58 @@ public class Cliente {
 		return menu;
 	}
 
-	public double montoApagar() {
-
-		double monto = 0;
-		for (int i = 0; i < this.menu.length; i++) {
-			monto = this.menu[i].getPrecioDelPlato() + this.menu[i].getPrecioDeLaBebida();
-		}
-		return monto;
-
+	public boolean isEstadoDePago() {
+		return estadoDePago;
 	}
 
-	@Override
-	
-	// TODO: toString con uso de Arrays
-	/* public String toString() {
-		return "Cliente [nombreCliente=" + nombreCliente + ", menu=" + Arrays.toString(menu) + "]";
-	}*/ 
-	
+	public void setEstadoDePago(boolean estadoDePago) {
+		this.estadoDePago = estadoDePago;
+	}
+
+	public String listaClientes() {
+		StringBuilder ticketBuilder = new StringBuilder();
+		ticketBuilder.append(String.format("%-20s: %s\n", "Cliente", nombreCliente));
+		ticketBuilder.append(String.format("%-20s: %s\n", "Número de Mesa", numeroMesa));
+
+		return ticketBuilder.toString();
+	}
+
 	public String toString() {
-	    String clienteString = "Cliente: " + nombreCliente + "\n";
-	    String menuString = "Menú:\n";
+		StringBuilder ticketBuilder = new StringBuilder();
+		LocalDateTime fechaHora = LocalDateTime.now();
 
-	    for (int i = 0; i < menu.length; i++) {
-	        Menu menuItem = menu[i];
-	        if (menuItem != null) {
-	            if (i > 0) {
-	                menuString += "-------------------------\n";
-	            }
-	            menuString += "Plato #" + (i + 1) + ":\n" + menuItem.toString() + "\n";
-	        }
-	    }
+		LocalDate fecha = fechaHora.toLocalDate();
+		LocalTime hora = fechaHora.toLocalTime();
 
-	    return clienteString + menuString;
+		DateTimeFormatter formaterFecha = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+		DateTimeFormatter formaterHora = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+		String formatoFecha = fechaHora.format(formaterFecha);
+		String formatoHora = fechaHora.format(formaterHora);
+
+		ticketBuilder.append("*******************************\n");
+		ticketBuilder.append("*           T I C K E T       *\n");
+		ticketBuilder.append("*******************************\n");
+
+		ticketBuilder.append(String.format("%-20s: %s\n", "Cliente", nombreCliente));
+		ticketBuilder.append(String.format("%-20s: %s\n", "Número de Mesa", numeroMesa));
+
+		ticketBuilder.append("------- Detalles del Pedido -------\n");
+		for (int i = 0; i < menu.length; i++) {
+			ticketBuilder.append(String.format("%-10s: %s\n", "Plato " + (i + 1), menu[i].platos()));
+		}
+
+		ticketBuilder.append(String.format("%-20s: %s\n", "Tipo de Pago", tipoPago));
+		ticketBuilder.append(String.format("%-20s: %s\n", "Monto Final", montoFinal));
+
+		ticketBuilder.append("------- Estado de Pago -------\n");
+		ticketBuilder.append(String.format("%-20s: %s\n", "Estado de Pago", estadoDePago));
+		ticketBuilder.append(String.format("%-20s: %s\n", "Fecha", formatoFecha));
+		ticketBuilder.append(String.format("%-20s: %s\n", "Hora", formatoHora));
+
+		ticketBuilder.append("*******************************\n");
+
+		return ticketBuilder.toString();
 	}
-	
-	// TODO: Checkear  si agregamos o no
-	
-    /* private String nombre;
-    private String[] pedido;
-    private Menu menu;
-    private TipoDePago tipoDePago;
-    private final double APLICACION = 0.15;
-    private final double EFECTIVO = 0.20;
-    private final double TARJETA_CREDITO = 0.10;
-    private final double TRANSFERENCIA = 0;
 
-    public Cliente(String nombre, String[] pedido, Menu menu, TipoDePago tipoDePago) {
-        this.nombre = nombre;
-        this.pedido = pedido;
-        this.menu = menu;
-        this.tipoDePago = tipoDePago;
-    }
-
-    public double precioFinal() {
-        double precioFinal = menu.precioTotal();
-
-        if (tipoDePago == TipoDePago.APLICACION) {
-            precioFinal -= precioFinal * APLICACION;
-        } else if (tipoDePago == TipoDePago.EFECTIVO) {
-            precioFinal -= precioFinal * EFECTIVO;
-        } else if (tipoDePago == TipoDePago.TARJETA_CREDITO) {
-            precioFinal += precioFinal * TARJETA_CREDITO;
-        }
-
-        return precioFinal;
-    } */
 }

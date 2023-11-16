@@ -1,67 +1,59 @@
 package dominio;
 
+
 public class Menu {
-    private String nombreDelPlato;
-    private String nombreDeLaBebida;
-    private double precioDelPlato;
-    private double precioDeLaBebida;
-    private static int ID = 0;
+	private String nombre;
+	private double precio;
+	private TipoProducto tipoProducto;
+	private int id;
 
-    public Menu(String nombreDelPlato, String nombreDeLaBebida, double precioDelPlato, double precioDeLaBebida) {
-        this.nombreDelPlato = nombreDelPlato;
-        this.nombreDeLaBebida = nombreDeLaBebida;
-        this.precioDelPlato = precioDelPlato;
-        this.precioDeLaBebida = precioDeLaBebida;
-        ID++;
-    }
+	public Menu(String nombre, double precio, TipoProducto tipoProducto, int id) {
 
-    public double precioTotal() {
-        return precioDelPlato + precioDeLaBebida;
-    }
+		this.nombre = nombre;
+		this.precio = precio;
+		this.tipoProducto = tipoProducto;
+		this.id = id;
+	}
 
-    public String getNombreDelPlato() {
-        return nombreDelPlato;
-    }
+	public String getNombre() {
+		return nombre;
+	}
 
-    public void setNombreDelPlato(String nombreDelPlato) {
-        this.nombreDelPlato = nombreDelPlato;
-    }
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-    public String getNombreDeLaBebida() {
-        return nombreDeLaBebida;
-    }
+	public double getPrecio() {
+		return precio;
+	}
 
-    public void setNombreDeLaBebida(String nombreDeLaBebida) {
-        this.nombreDeLaBebida = nombreDeLaBebida;
-    }
+	public void setPrecio(double precio) {
+		this.precio = precio;
+	}
 
-    public double getPrecioDelPlato() {
-        return precioDelPlato;
-    }
+	public TipoProducto getTipoProducto() {
+		return tipoProducto;
+	}
 
-    public void setPrecioDelPlato(double precioDelPlato) {
-        this.precioDelPlato = precioDelPlato;
-    }
+	public void setTipoProducto(TipoProducto tipoProducto) {
+		this.tipoProducto = tipoProducto;
+	}
 
-    public double getPrecioDeLaBebida() {
-        return precioDeLaBebida;
-    }
+	public int getId() {
+		return id;
+	}
 
-    public void setPrecioDeLaBebida(double precioDeLaBebida) {
-        this.precioDeLaBebida = precioDeLaBebida;
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    public static int getID() {
-        return ID;
-    }
+	public String platos() {
+		StringBuilder producto = new StringBuilder();
+		producto.append(String.format("%-10s: %s\n", tipoProducto, nombre));
+		producto.append(String.format("%-10s: %s\n", "Precio", "$" + precio));
+		producto.append(String.format("%-10s: %s\n", "ID", id));
 
-    @Override
-    public String toString() {
-        return "Menú #" + ID + "\n" +
-               "Plato: " + nombreDelPlato + "\n" +
-               "Precio del plato: $" + precioDelPlato + "\n" +
-               "Bebida: " + nombreDeLaBebida + "\n" +
-               "Precio de la bebida: $" + precioDeLaBebida + "\n" +
-               "Precio Total: $" + precioTotal();
-    }
+		return producto.toString();
+	}
+
 }
