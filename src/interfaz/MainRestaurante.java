@@ -4,12 +4,13 @@ import dominio.*;
 import java.util.*;
 
 public class MainRestaurante {
-	public static final int AGREGAR_CLIENTE = 1, MESA_A_PAGAR = 2, VER_RECAUDACION_DEL_DIA = 3,
-			VER_TICKET_POR_TIPODEPAGO = 4, SALIR = 5;
+	public static final int AGREGAR_CLIENTE = 1, MESA_A_PAGAR = 2, VER_PROPINA = 3, SALIR = 4;
+	public static final int VER_RECAUDACION_DEL_DIA = 1, VER_TICKET_POR_TIPODEPAGO = 2, CONTRATAR_CAMARERO = 3, DESPEDIR_CAMARERO = 4, ATRAS = 5;
 	static Scanner teclado = new Scanner(System.in);
 
 	public static void main(String[] args) {
 		Restaurante restaurante = new Restaurante("Restaurante messi");
+		Admin admin = new Admin("1234");
 		agregarPlatosAleatoriaamente(restaurante);
 		int salir = 0;
 		do {
@@ -23,16 +24,66 @@ public class MainRestaurante {
 			case MESA_A_PAGAR:
 				pagarCuenta(restaurante);
 				break;
-			case VER_RECAUDACION_DEL_DIA:
-				verRecaucaionDelDia(restaurante);
+			case SALIR:
+				salir = 99;
 				break;
-			case VER_TICKET_POR_TIPODEPAGO:
-				verTicketPorTipoDePago(restaurante);
+			default:
+				mostrarPorPantalla("Opción no válida. Intente de nuevo.");
 				break;
 			}
 
 		} while (salir != 99);
 
+	}
+
+	private static void verMenuAdmin(Restaurante restaurante, Admin admin) {
+		
+		int salir = 0;
+		do {
+			mostrarMenu();
+			int opcion = ingresarEntero("Ingrese opcion");
+
+			switch (opcion) {
+			case VER_RECAUDACION_DEL_DIA:
+				agregarCliente(restaurante);
+				break;
+			case VER_TICKET_POR_TIPODEPAGO:
+				verTicketPorTipoDePago(restaurante);
+				break;
+			case CONTRATAR_CAMARERO:
+				contratarCamarero(admin);
+				break;
+			case DESPEDIR_CAMARERO:
+				despedirCamarero(admin);
+				break;
+			case ATRAS:
+				salir = 99;
+				break;
+			default:
+				mostrarPorPantalla("Opción no válida. Intente de nuevo.");
+				break;
+			}
+
+		} while (salir != 99);
+	}
+
+	
+	
+	private static void contratarCamarero(Admin admin) {
+		String nombre = ingresarString("Ingresar nombre del nuevo camarero: ");
+		Camarero camarero = new Camarero(nombre);
+		admin.contratarCamarero(camarero);
+	}
+	
+	private static void despedirCamarero(Admin admin) {
+		Camarero[] camarero = admin.mostrarCamarero();
+		for (int i = 0; i < camarero.length; i++) {
+			if (camarero[i] != null) {
+				mostrarPorPantalla(camarero[i].getNombre());
+			}
+		}
+		String nombre = ingresarString("Ingresar nombre del camarero que desee despedir: ");
+		admin.despedirCamarero(nombre);
 	}
 
 	private static void verTicketPorTipoDePago(Restaurante restaurante) {
@@ -142,9 +193,18 @@ public class MainRestaurante {
 		// TODO Auto-generated method stub
 		mostrarPorPantalla(AGREGAR_CLIENTE + "- AGREGAR CLIENTE");
 		mostrarPorPantalla(MESA_A_PAGAR + "- MESA A PAGAR");
-		mostrarPorPantalla(VER_RECAUDACION_DEL_DIA + "- VER RECAUDACION DEL DIA");
-		mostrarPorPantalla(VER_TICKET_POR_TIPODEPAGO + "- VER TICKETS POR TIPO DE PAGO");
 		mostrarPorPantalla(SALIR + "- SALIR");
+
+	}
+
+	private static void mostrarMenuAdmin() {
+		// TODO Auto-generated method stub
+		// VER_RECAUDACION_DEL_DIA = 1, VER_TICKET_POR_TIPODEPAGO = 2, CONTRATAR_CAMARERO = 3, DESPEDIR_CAMARERO = 4, ATRAS = 5;
+		mostrarPorPantalla(VER_RECAUDACION_DEL_DIA + "- VER RECAUDACION DEL DIA");
+		mostrarPorPantalla(VER_TICKET_POR_TIPODEPAGO + "- VER TICKET POR TIPO DE PAGO");
+		mostrarPorPantalla(CONTRATAR_CAMARERO + "- CONTRATAR CAMARERO");
+		mostrarPorPantalla(DESPEDIR_CAMARERO + "- DESPEDIR CAMARERO");
+		mostrarPorPantalla(ATRAS + "- SALIR");
 
 	}
 
@@ -195,6 +255,12 @@ public class MainRestaurante {
 		mostrarPorPantalla(mensaje);
 
 		return teclado.nextInt();
+	}
+	
+	private static String ingresarString(String mensaje) {
+		mostrarPorPantalla(mensaje);
+
+		return teclado.next();
 	}
 
 	public static TipoPago metodoPago(String mensaje) {

@@ -6,7 +6,7 @@ public class Restaurante {
 	private Menu[] menu = new Menu[100];
 	private Menu[] menuVentas = new Menu[100];
 
-	private final double APLICACION = 0.5;
+	private final double APLICACION = 0.1;
 	private final double TARJETA = 0.10;
 	private final double TRANSFERENCIA = 0.1;
 	private final double EFECTIVO = 0.0;
@@ -249,7 +249,7 @@ public class Restaurante {
 
 		if (tipoPago.equals(TipoPago.APLICACION)) {
 			monto = monto * APLICACION;
-			montoFinal += monto;
+			montoFinal -= monto;
 		} else if (tipoPago.equals(TipoPago.TARJETA_CREDITO)) {
 			monto = monto * TARJETA;
 			montoFinal += monto;
