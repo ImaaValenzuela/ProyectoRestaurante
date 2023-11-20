@@ -9,12 +9,14 @@ public class Cliente {
 	private TipoPago tipoPago;
 	private double montoFinal;
 	private int numeroMesa;
+    private static int numeroMesaGlobal = 0;
 	private boolean estadoDePago;
 
-	public Cliente(String nombreCliente, int cantidadPlatos, int numeroDeMesa) {
+	public Cliente(String nombreCliente, int cantidadPlatos) {
 		this.nombreCliente = nombreCliente;
 		this.menu = new Menu[cantidadPlatos];
-		this.numeroMesa = numeroDeMesa;
+		this.numeroMesa = ++numeroMesaGlobal;
+		//Crear contador para las mesas
 	}
 
 	public String getNombreCliente() {
@@ -43,9 +45,6 @@ public class Cliente {
 		return numeroMesa;
 	}
 
-	public void setNumeroMesa(int numeroMesa) {
-		this.numeroMesa = numeroMesa;
-	}
 
 	public TipoPago getTipoPago() {
 		return tipoPago;
@@ -87,8 +86,8 @@ public class Cliente {
 		StringBuilder ticketBuilder = new StringBuilder();
 		LocalDateTime fechaHora = LocalDateTime.now();
 
-		LocalDate fecha = fechaHora.toLocalDate();
-		LocalTime hora = fechaHora.toLocalTime();
+		//LocalDate fecha = fechaHora.toLocalDate();
+	//	LocalTime hora = fechaHora.toLocalTime();
 
 		DateTimeFormatter formaterFecha = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		DateTimeFormatter formaterHora = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -105,7 +104,7 @@ public class Cliente {
 
 		ticketBuilder.append("------- Detalles del Pedido -------\n");
 		for (int i = 0; i < menu.length; i++) {
-			ticketBuilder.append(String.format("%-10s: %s\n", "Plato " + (i + 1), menu[i].platos()));
+			ticketBuilder.append(String.format("%-10s: %s\n", "Consumo " + (i + 1), menu[i].platos()));
 		}
 
 		ticketBuilder.append(String.format("%-20s: %s\n", "Tipo de Pago", tipoPago));

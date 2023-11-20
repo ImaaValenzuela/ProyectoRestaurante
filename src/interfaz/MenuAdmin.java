@@ -1,0 +1,11 @@
+package interfaz;
+
+public enum MenuAdmin {
+    VER_RECAUDACION_DEL_DIA, 
+    VER_TICKET_POR_TIPODEPAGO, 
+    CONTRATAR_CAMARERO, 
+    DESPEDIR_CAMARERO, 
+    AGREGAR_PLATO,
+    ELIMINAR_PLATO,
+    ATRAS
+}

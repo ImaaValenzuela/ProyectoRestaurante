@@ -1,11 +1,11 @@
 package dominio;
 
 public class Admin {
-	
+
 	private String usuario;
 	private String contrasenia;
-	private Camarero[] camarero = new Camarero [10];
-	
+	private Camarero[] camarero = new Camarero[10];
+
 	public Admin(String contrasenia) {
 		this.contrasenia = contrasenia;
 	}
@@ -25,11 +25,11 @@ public class Admin {
 	public void setContrasenia(String contrasenia) {
 		this.contrasenia = contrasenia;
 	}
-	
+
 	public boolean validarContrasenia(String contraseniaIngresada) {
 		return contrasenia.equals(contraseniaIngresada);
 	}
-	
+
 	public boolean contratarCamarero(Camarero camarero) {
 		boolean seContrato = false;
 		int contador = 0;
@@ -41,9 +41,9 @@ public class Admin {
 			contador++;
 		}
 		return seContrato;
-		
+
 	}
-	
+
 	public boolean despedirCamarero(String nombre) {
 		boolean seDespidio = false;
 		int contador = 0;
@@ -56,18 +56,34 @@ public class Admin {
 		}
 		return seDespidio;
 	}
-	
+
 	public Camarero[] mostrarCamarero() {
 		Camarero[] camareros = new Camarero[this.camarero.length];
 
 		for (int i = 0; i < this.camarero.length; i++) {
 			if (this.camarero[i] != null) {
-				camarero[i] = this.camarero[i];
+				camareros[i] = this.camarero[i];
 			}
 		}
 
 		return camareros;
 	}
-	
-	
+
+	public Camarero obtenerCamarero() {
+
+		Camarero camarero = null;
+
+		boolean seObtuvoCamarero = false;
+
+		while (!seObtuvoCamarero) {
+			int numRandom = (int) (Math.random() * this.camarero.length);
+			camarero = this.camarero[numRandom];
+			if (camarero != null) {
+				seObtuvoCamarero = true;
+			}
+		}
+
+		return camarero;
+	}
+
 }

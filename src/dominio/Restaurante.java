@@ -15,6 +15,14 @@ public class Restaurante {
 		this.nombreRestaurant = nombreRestaurant;
 	}
 
+	public String getNombreRestaurant() {
+		return nombreRestaurant;
+	}
+
+	public void setNombreRestaurant(String nombreRestaurant) {
+		this.nombreRestaurant = nombreRestaurant;
+	}
+
 	public boolean nuevoCliente(Cliente cliente) {
 		boolean seAgrego = false;
 		int contador = 0;
@@ -74,6 +82,10 @@ public class Restaurante {
 
 	}
 
+	public Menu[] getMenuVentas() {
+		return menuVentas;
+	}
+
 	public Cliente[] ticketDeClientePorTipoDepago(TipoPago tipoPago) {
 
 		Cliente[] clientes = new Cliente[this.cliente.length];
@@ -87,7 +99,6 @@ public class Restaurante {
 
 		return clientes;
 	}
-	
 
 	public double recaudacionDelDia() {
 
@@ -104,7 +115,7 @@ public class Restaurante {
 	}
 
 	public int obtenerNumeroDeMesa() {
-		int numeroDeMesa = (int) (Math.random() * 30) + 15;
+		int numeroDeMesa = (int) (Math.random() * 10) + 5;
 		numeroDeMesa = verificarNumeroDeMesa(numeroDeMesa);
 		return numeroDeMesa;
 	}
@@ -112,39 +123,21 @@ public class Restaurante {
 	public int verificarNumeroDeMesa(int numeroDeMesa) {
 		boolean yaExiste = false;
 		int contador = 0;
+		int nuevoNumeroDeMesa = numeroDeMesa;
 
 		while (!yaExiste && contador < this.menu.length) {
-			if (this.cliente[contador] != null && this.cliente[contador].getNumeroMesa() == numeroDeMesa) {
+			if (this.cliente[contador] != null && this.cliente[contador].getNumeroMesa() == nuevoNumeroDeMesa) {
 				yaExiste = true;
 			}
 			contador++;
 		}
 
-		int nuevoNumeroDeMesa = numeroDeMesa;
 		// Si el ID ya existe, buscar un nuevo ID único
+
 		if (yaExiste) {
 
-			this.cliente[contador].setNumeroMesa(nuevoNumeroDeMesa++);
+			nuevoNumeroDeMesa = obtenerNumeroDeMesa();
 
-			boolean encontradoNuevoID = false; // Variable para controlar si se encuentra un nuevo ID
-
-			while (!encontradoNuevoID) {
-				boolean existeElNuevoID = false;
-				nuevoNumeroDeMesa = this.cliente[contador].getNumeroMesa();
-
-				for (int i = 0; i < this.cliente.length; i++) {
-					if (this.cliente[i] != null && this.cliente[i].getNumeroMesa() == nuevoNumeroDeMesa) {
-						existeElNuevoID = true;
-						break; // Salir del bucle interno si se encuentra el nuevo ID
-					}
-				}
-
-				if (!existeElNuevoID) {
-					encontradoNuevoID = true; // Se encontró un nuevo ID válido, sal del bucle externo
-				} else {
-					this.cliente[contador].setNumeroMesa(nuevoNumeroDeMesa++); // Incrementar el ID y continuar buscando
-				}
-			}
 		}
 
 		return nuevoNumeroDeMesa;
@@ -168,97 +161,96 @@ public class Restaurante {
 
 	}
 
+	public int obtenerID() {
+		int id = (int) (Math.random() * this.menu.length);
+		verificarID(id);
+
+		return id;
+	}
+
 	public int verificarID(int id) {
-		boolean yaExiste = false;
+		int nuevoID = 0;
+
+		boolean seEncontro = false;
 		int contador = 0;
 
-		while (!yaExiste && contador < this.menu.length) {
-			if (this.menu[contador] != null && this.menu[contador].getId() == id) {
-				yaExiste = true;
+		while (!seEncontro && contador < this.cliente.length) {
+			if (this.cliente[contador] != null && this.cliente[contador].getNumeroMesa() == id) {
+				seEncontro = true;
 			}
 			contador++;
 		}
 
-		int control = 0;
-		// Si el ID ya existe, buscar un nuevo ID único
-		if (yaExiste) {
+		nuevoID = id;
 
-			int nuevoID = id;
-			this.menu[contador].setId(nuevoID++);
-
-			boolean encontradoNuevoID = false; // Variable para controlar si se encuentra un nuevo ID
-
-			while (!encontradoNuevoID) {
-				boolean existeElNuevoID = false;
-				control = this.menu[contador].getId();
-
-				for (int i = 0; i < this.menu.length; i++) {
-					if (this.menu[i] != null && this.menu[i].getId() == control) {
-						existeElNuevoID = true;
-						break; // Salir del bucle interno si se encuentra el nuevo ID
-					}
-				}
-
-				if (!existeElNuevoID) {
-					encontradoNuevoID = true; // Se encontró un nuevo ID válido, sal del bucle externo
-				} else {
-					this.menu[contador].setId(nuevoID++); // Incrementar el ID y continuar buscando
-				}
-			}
+		if (seEncontro) {
+			nuevoID = obtenerID();
 		}
 
-		return control;
+		return nuevoID;
 	}
 
-	public Cliente[] mostrarClientes() {
-		Cliente[] clientes = new Cliente[this.cliente.length];
+	public Cliente[] getCliente() {
+		return cliente;
+	}
 
-		for (int i = 0; i < this.cliente.length; i++) {
-			if (this.cliente[i] != null && !this.cliente[i].isEstadoDePago()) {
-				clientes[i] = this.cliente[i];
+	public Menu[] getMenu() {
+		return menu;
+	}
+
+	public Menu[] ordenarMenuDeVentasPorPrecioAscendente() {
+
+		Menu[] menu = this.menu.clone();
+		for (int i = 0; i < this.menu.length; i++) {
+			for (int j = 0; j < this.menu.length - 1; j++) {
+
+				if (menu[j] != null && menu[j + 1] != null && menu[j].getPrecio() > menu[j + 1].getPrecio()) {
+					Menu aux = menu[j];
+					menu[j] = menu[j + 1];
+					menu[j + 1] = aux;
+				}
+
 			}
 		}
-
-		return clientes;
+		return menu;
 	}
 
-	public Menu[] mostrarMenuRestaurant() {
-		Menu[] menuRestaurant = new Menu[this.menu.length];
+	public Menu[] obtenerMenuDeVentasPorProduco(TipoProducto tipoProducto) {
+
+		Menu[] menu = new Menu[this.menu.length];
 		int contador = 0;
 		for (int i = 0; i < this.menu.length; i++) {
-			if (this.menu[i] != null) {
+			if (this.menu[i] != null && this.menu[i].getTipoProducto().equals(tipoProducto)) {
+				menu[contador] = this.menu[i];
 				contador++;
 			}
-		}
 
-		int control = 0;
-		if (contador > 0) {
-			for (int i = 0; i < contador; i++) {
-				if (this.menu[i] != null) {
-					menuRestaurant[control] = this.menu[i];
-					control++;
-				}
-			}
 		}
-		return menuRestaurant;
+		return menu;
+
 	}
 
 	public double obtenerPrecio(TipoPago tipoPago, double monto) {
 
 		double montoFinal = monto;
 
-		if (tipoPago.equals(TipoPago.APLICACION)) {
-			monto = monto * APLICACION;
+		switch (tipoPago) {
+		case APLICACION:
+			monto *= APLICACION;
 			montoFinal -= monto;
-		} else if (tipoPago.equals(TipoPago.TARJETA_CREDITO)) {
-			monto = monto * TARJETA;
+			break;
+		case TARJETA_CREDITO:
+			monto *= TARJETA;
 			montoFinal += monto;
-		} else if (tipoPago.equals(TipoPago.TRANSFERENCIA)) {
-			monto = monto * TRANSFERENCIA;
+			break;
+		case TRANSFERENCIA:
+			monto *= TRANSFERENCIA;
 			montoFinal += monto;
-		} else {
-			monto = monto * EFECTIVO;
+			break;
+		default:
+			monto *= EFECTIVO;
 			montoFinal += monto;
+			break;
 		}
 		return montoFinal;
 	}
@@ -269,26 +261,72 @@ public class Restaurante {
 
 		for (int i = 0; i < cliente.getMenu().length; i++) {
 
-			if (cliente.getMenu()[i] != null
-					&& cliente.getMenu()[i].getTipoProducto().PLATO.equals(TipoProducto.PLATO)) {
-				montoSinRecargo += cliente.getMenu()[i].getPrecio();
-			} else if (cliente.getMenu()[i] != null
-					&& cliente.getMenu()[i].getTipoProducto().BEBIDA.equals(TipoProducto.BEBIDA)) {
-				montoSinRecargo += cliente.getMenu()[i].getPrecio();
+			if (cliente.getMenu()[i] != null) {
+
+				switch (cliente.getMenu()[i].getTipoProducto()) {
+				case PLATO:
+					montoSinRecargo += cliente.getMenu()[i].getPrecio();
+					break;
+				case BEBIDA:
+					montoSinRecargo += cliente.getMenu()[i].getPrecio();
+					break;
+				default:
+					break;
+				}
 			}
 		}
 
 		double montoFinal = obtenerPrecio(cliente.getTipoPago(), montoSinRecargo);
+
 		cliente.setMontoAPagar(montoFinal);
 		return montoFinal;
 
 	}
 
-	public boolean realizarPago(Cliente cliente, double monto) {
+	public boolean realizarPago(Cliente cliente, double monto, Camarero camarero) {
 
 		if (monto >= cliente.getMontoAPagar()) {
+			double propina = monto - cliente.getMontoAPagar();
+			camarero.recibirPropina(propina);
 			return true;
 		}
 		return false;
 	}
+
+	public String ventasDelDia() {
+		StringBuilder ventasDelDia = new StringBuilder();
+
+		return ventasDelDia.toString();
+	}
+	
+    public boolean agregarPlato(Menu plato) {
+        boolean seAgrego = false;
+        int contador = 0;
+
+        while (!seAgrego && contador < this.menu.length) {
+            if (this.menu[contador] == null) {
+                this.menu[contador] = plato;
+                seAgrego = true;
+            }
+            contador++;
+        }
+
+        return seAgrego;
+    }
+
+    public boolean eliminarPlatoPorId(int id) {
+        boolean seElimino = false;
+        int contador = 0;
+
+        while (!seElimino && contador < this.menu.length) {
+            if (this.menu[contador] != null && this.menu[contador].getId() == id) {
+                this.menu[contador] = null;
+                seElimino = true;
+            }
+            contador++;
+        }
+
+        return seElimino;
+    }
+
 }
