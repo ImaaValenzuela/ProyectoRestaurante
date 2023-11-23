@@ -5,64 +5,69 @@ import java.util.*;
 
 public class MainRestaurante {
 	static Scanner teclado = new Scanner(System.in);
-    
+
 	// Colores ANSI para la consola
-    public static final String RESET = "\u001B[0m";
-    public static final String AZUL_CLARO = "\u001B[94m"; 
-    public static final String BLANCO = "\u001B[37m";
+	public static final String RESET = "\u001B[0m";
+	public static final String AZUL_CLARO = "\u001B[94m";
+	public static final String BLANCO = "\u001B[37m";
+	public static final String ROJO = "\u001B[31m";
 
-	public static void main(String[] args) {
-		Restaurante restaurante = new Restaurante("Restaurante messi");
-		Admin admin = new Admin("1234");
-		MenuPrincipal menuPrincipal = null;
-		agregarPlatosAleatoriaamente(restaurante);
-		agregarCamarerosAleatoriamente(admin);
+    public static void main(String[] args) {
 
-		mostrarPorPantalla(BLANCO + "Bienvenido a " + AZUL_CLARO + restaurante.getNombreRestaurant() + RESET);
-		do {
-			menuPrincipal = menuPrincipal();
-			Camarero camarero = admin.obtenerCamarero();
+        Restaurante restaurante = new Restaurante("Restaurante messi");
+        Admin admin = new Admin("1234");
+        MenuPrincipal menuPrincipal = null;
+        agregarPlatosAleatoriaamente(restaurante);
+        agregarCamarerosAleatoriamente(admin);
 
-			switch (menuPrincipal) {
-			case MENU_CAMARERO:
-				menuCamarero(restaurante, camarero);
-				break;
-			case MENU_ADMIN:
-				String contrasenia = ingresarString("Ingresar contrasenia:");
-				boolean esValida = admin.validarContrasenia(contrasenia);
-				if (esValida) {
-					verMenuAdmin(restaurante, admin);
-				} else {
-					mostrarPorPantalla("Contrasenia incorrecta");
-				}
-				break;
+        mostrarPorPantalla(BLANCO + "Bienvenido a " + AZUL_CLARO + restaurante.getNombreRestaurant() + RESET);
+        do {
+            menuPrincipal = menuPrincipal();
 
-			case SALIR:
+            switch (menuPrincipal) {
+                case MENU_CAMARERO:
+                    menuCamarero(restaurante, admin);
+                    break;
+                case MENU_ADMIN:
+                    administracion(restaurante, admin);
+                    break;
+                case SALIR:
+                    break;
+            }
+        } while (menuPrincipal != MenuPrincipal.SALIR);
 
-				break;
-			default:
-				break;
-			}
-		} while (menuPrincipal != MenuPrincipal.SALIR);
+        mostrarPorPantalla(ROJO + "Restaurante cerrado." + RESET);
+
+    }
+
+	private static void administracion(Restaurante restaurante, Admin admin) {
+		String contrasenia = ingresarString("Ingresar contrasenia:");
+		boolean esValida = admin.validarContrasenia(contrasenia);
+		// TODO Auto-generated method stub
+		if (esValida) {
+			verMenuAdmin(restaurante, admin);
+		} else {
+			mostrarPorPantalla(ROJO + "Contrasenia incorrecta" + RESET);
+		}
 
 	}
 
-    // Menú del camarero
-	private static void menuCamarero(Restaurante restaurante, Camarero camarero) {
+	// Menú del camarero
+	private static void menuCamarero(Restaurante restaurante, Admin admin) {
 		MenuCamarero menu = null;
 		do {
 			mostrarMenu();
 			menu = menuCamarero("Ingrese opcion");
-
+			Camarero camarero = admin.obtenerCamarero();
 			switch (menu) {
 			case ATENDER_CLIENTE:
 				agregarCliente(restaurante, camarero);
 				break;
 			case MESA_A_PAGAR:
-				pagarCuenta(restaurante, camarero);
+				pagarCuenta(restaurante, admin);
 				break;
 			case VER_PROPINA:
-				propinaDeCamarero(camarero);
+				propinaDeCamarero(admin);
 			case SALIR:
 				break;
 			default:
@@ -71,141 +76,78 @@ public class MainRestaurante {
 			}
 
 		} while (menu != MenuCamarero.SALIR);
-	}
-
-	
-    // Ver propina del camarero
-	private static void propinaDeCamarero(Camarero camarero) {
-		// TODO Auto-generated method stub
-		mostrarPorPantalla("Propina del dia:" + camarero.getPropina());
 
 	}
 
 	private static void verMenuAdmin(Restaurante restaurante, Admin admin) {
-	    MenuAdmin menu = null;
-	    do {
-	        mostrarMenuAdmin();
-	        menu = menuAdmin("Ingrese opcion");
+		MenuAdmin menu = null;
+		do {
+			mostrarMenuAdmin();
+			menu = menuAdmin("Ingrese opcion");
 
-	        switch (menu) {
-	            case VER_RECAUDACION_DEL_DIA:
-	                verRecaucaionDelDia(restaurante);
-	                break;
-	            case VER_TICKET_POR_TIPODEPAGO:
-	                verTicketPorTipoDePago(restaurante);
-	                break;
-	            case CONTRATAR_CAMARERO:
-	                contratarCamarero(admin);
-	                break;
-	            case DESPEDIR_CAMARERO:
-	                despedirCamarero(admin);
-	                break;
-	            case AGREGAR_PLATO:
-	                agregarPlato(restaurante);
-	                break;
-	            case ELIMINAR_PLATO:
-	                eliminarPlato(restaurante);
-	                break;
-	            case ATRAS:
-	                break;
-	            default:
-	                mostrarPorPantalla("Opción no válida. Intente de nuevo.");
-	                break;
-	        }
-
-	    } while (menu != MenuAdmin.ATRAS);
-	}
-
-	
-	
-	private static void agregarPlato(Restaurante restaurante) {
-	    mostrarPorPantalla("Ingrese los detalles del nuevo plato:");
-
-	    String nombre = ingresarString("Nombre:");
-	    
-	    double precio = ingresarEntero("Precio:");
-
-	    TipoProducto tipoProducto = obtenerTipoProducto("Tipo de producto (PLATO o BEBIDA):");
-	    int id = obtenerID();
-
-	    Menu nuevoPlato = new Menu(nombre, precio, tipoProducto, id);
-
-	    if (restaurante.agregarPlato(nuevoPlato)) {
-	        mostrarPorPantalla("Plato agregado correctamente.");
-	    } else {
-	        mostrarPorPantalla("No se pudo agregar el plato.");
-	    }
-	}
-
-	private static void eliminarPlato(Restaurante restaurante) {
-	    mostrarPlatos(restaurante.getMenu());
-	    
-	    int id = ingresarEntero("Ingrese el ID del plato que desea eliminar:");
-
-	    if (restaurante.eliminarPlatoPorId(id)) {
-	        mostrarPorPantalla("Plato eliminado correctamente.");
-	    } else {
-	        mostrarPorPantalla("No se pudo encontrar el plato con el ID especificado.");
-	    }
-	}
-
-	private static TipoProducto obtenerTipoProducto(String mensaje) {
-	    mostrarPorPantalla(mensaje);
-	    String tipo = teclado.next().toUpperCase();
-	    return TipoProducto.valueOf(tipo);
-	}
-
-	private static int obtenerID() {
-	    return (int) (Math.random() * 100) + 1;
-	}
-
-	private static void contratarCamarero(Admin admin) {
-		String nombre = ingresarString("Ingresar nombre del nuevo camarero: ");
-		Camarero camarero = new Camarero(nombre);
-		if (admin.contratarCamarero(camarero)) {
-			mostrarPorPantalla("Bienvenido " + nombre);
-		} else {
-			mostrarPorPantalla("Nosotros te llamamos");
-		}
-
-	}
-
-	private static void despedirCamarero(Admin admin) {
-		Camarero[] camarero = admin.mostrarCamarero();
-		mostrarPorPantalla("Lista de camareros: ");
-		for (int i = 0; i < camarero.length; i++) {
-			if (camarero[i] != null) {
-				mostrarPorPantalla("El nombre del camarero es: " + camarero[i].getNombre());
+			switch (menu) {
+			case VER_RECAUDACION_DEL_DIA:
+				verRecaucaionDelDia(restaurante);
+				break;
+			case VER_TICKET_POR_TIPODEPAGO:
+				verTicketPorTipoDePago(restaurante);
+				break;
+			case VER_VENTAS_DEL_DIA:
+				verVentasDelDia(restaurante);
+				break;
+			case CONTRATAR_CAMARERO:
+				contratarCamarero(admin);
+				break;
+			case DESPEDIR_CAMARERO:
+				despedirCamarero(admin);
+				break;
+			case AGREGAR_PLATO:
+				agregarPlato(restaurante);
+				break;
+			case ELIMINAR_PLATO:
+				eliminarPlato(restaurante);
+				break;
+			case ATRAS:
+				break;
+			default:
+				mostrarPorPantalla("Opción no válida. Intente de nuevo.");
+				break;
 			}
-		}
-		String nombre = ingresarString("Ingresar nombre del camarero que desee despedir: ");
-		if (admin.despedirCamarero(nombre)) {
-			mostrarPorPantalla("Chau " + nombre + " que te vaya bien!");
-		} else {
-			mostrarPorPantalla("No hay ningun camarero con el nombre: " + nombre);
-		}
+
+		} while (menu != MenuAdmin.ATRAS);
 	}
 
-	private static void verTicketPorTipoDePago(Restaurante restaurante) {
+	private static void verVentasDelDia(Restaurante restaurante) {
 		// TODO Auto-generated method stub
+		int opcion = 0;
 
-		for (int i = 1; i <= TipoPago.values().length; i++) {
+		do {
+			opcion = ingresarEntero("1)VER POR PRECIO ASCENDENTE \n2)VER POR TIPO DE PRODCUTO \n3)SALIR");
+			switch (opcion) {
+			case 1:
+				Menu[] menuVentas = restaurante.ordenarMenuDeVentasPorPrecioAscendente();
 
-			mostrarPorPantalla(i + ")" + TipoPago.values()[i - 1]);
+				if (menuVentas[0] != null) {
+					mostrarPlatos(menuVentas);
+				} else {
+					mostrarPorPantalla("Aun no existen ventas.");
+				}
+				break;
+			case 2:
 
-		}
+				TipoProducto tipo = obtenerTipoProducto("Escriba opcion (PLATO O BEBIDA)");
 
-		TipoPago metodoPago = metodoPago("Ingrese el tipo de pago");
+				Menu[] menuVentasPorProducto = restaurante.obtenerMenuDeVentasPorProduco(tipo);
 
-		Cliente[] clientes = restaurante.ticketDeClientePorTipoDepago(metodoPago);
+				if (menuVentasPorProducto[0] != null) {
+					mostrarPlatos(menuVentasPorProducto);
+				} else {
+					mostrarPorPantalla("Aun no existen ventas de ese tipo.");
+				}
+				break;
 
-		mostrarTicketClientes(clientes);
-	}
-
-	private static void verRecaucaionDelDia(Restaurante restaurante) {
-		// TODO Auto-generated method stub
-
-		mostrarPorPantalla("La recaudacion del dia es:$" + restaurante.recaudacionDelDia());
+			}
+		} while (opcion != 3);
 
 	}
 
@@ -215,12 +157,12 @@ public class MainRestaurante {
 		String nombre = teclado.next();
 		mostrarPorPantalla("Cantidad de platos a pedir:");
 		int platos = teclado.nextInt();
-		int numeroDeMesa = restaurante.obtenerNumeroDeMesa();
 
 		Cliente cliente = new Cliente(nombre, platos);
 		boolean agregado = restaurante.nuevoCliente(cliente);
 
 		if (agregado) {
+			camarero.agregarNumeroDeMesaAlCamarero(cliente.getNumeroMesa());
 			mostrarPorPantalla("Hola " + cliente.getNombreCliente() + " que va a pedir?");
 			Menu[] platosDelMenu = restaurante.getMenu();
 			mostrarPlatos(platosDelMenu);
@@ -228,29 +170,6 @@ public class MainRestaurante {
 		}
 
 	}
-
-	private static void pagarCuenta(Restaurante restaurante, Camarero camarero) {
-	    mostrarPorPantalla("Lista de clientes");
-	    Cliente[] clientes = restaurante.getCliente();
-
-	    if (clientes.length > 0) {
-	        mostrarListaClientes(clientes);
-
-	        int numeroMesa = ingresarEntero("Seleccione numero de mesa que va a pagar");
-
-	        Cliente clienteMesa = restaurante.obtenerClientePorNumeroDeMesa(numeroMesa);
-
-	        if (clienteMesa != null) {
-	            mostrarCliente(clienteMesa);
-	            finalizarPago(restaurante, clienteMesa, camarero);
-	        } else {
-	            mostrarPorPantalla("Mesa no encontrada");
-	        }
-	    } else {
-	        mostrarPorPantalla("No hay mesas disponibles.");
-	    }
-	}
-	
 
 	private static void agregarPlatosAlCliente(Cliente cliente, int platos, Restaurante restaurante) {
 		// TODO Auto-generated method stub
@@ -269,6 +188,87 @@ public class MainRestaurante {
 		}
 	}
 
+	private static void agregarPlato(Restaurante restaurante) {
+		mostrarPorPantalla("Ingrese los detalles del nuevo plato:");
+		teclado.nextLine();
+		
+		mostrarPorPantalla("Nombre: ");
+		String nombre = teclado.nextLine();
+
+		double precio = ingresarEntero("Precio:");
+
+		TipoProducto tipoProducto = obtenerTipoProducto("Tipo de producto (PLATO o BEBIDA):");
+		int id = obtenerID();
+
+		Menu nuevoPlato = new Menu(nombre, precio, tipoProducto, id);
+
+		if (restaurante.agregarPlato(nuevoPlato)) {
+			mostrarPorPantalla("Plato agregado correctamente.");
+		} else {
+			mostrarPorPantalla("No se pudo agregar el plato.");
+		}
+	}
+
+	private static void eliminarPlato(Restaurante restaurante) {
+		mostrarPlatos(restaurante.getMenu());
+
+		int id = ingresarEntero("Ingrese el ID del plato que desea eliminar:");
+
+		if (restaurante.eliminarPlatoPorId(id)) {
+			mostrarPorPantalla("Plato eliminado correctamente.");
+		} else {
+			mostrarPorPantalla("No se pudo encontrar el plato con el ID especificado.");
+		}
+	}
+
+	private static void contratarCamarero(Admin admin) {
+		String nombre = ingresarString("Ingresar nombre del nuevo camarero: ");
+		Camarero camarero = new Camarero(nombre);
+		if (admin.contratarCamarero(camarero)) {
+			mostrarPorPantalla("Bienvenido " + nombre);
+		} else {
+			mostrarPorPantalla("Nosotros te llamamos");
+		}
+
+	}
+
+	private static void despedirCamarero(Admin admin) {
+		Camarero[] camarero = admin.camareros();
+		mostrarPorPantalla("Lista de camareros: ");
+		for (int i = 0; i < camarero.length; i++) {
+			if (camarero[i] != null) {
+				mostrarPorPantalla("El nombre del camarero es: " + camarero[i].getNombre());
+			}
+		}
+		String nombre = ingresarString("Ingresar nombre del camarero que desee despedir: ");
+		if (admin.despedirCamarero(nombre)) {
+			mostrarPorPantalla("Chau " + nombre + " que te vaya bien!");
+		} else {
+			mostrarPorPantalla("No hay ningun camarero con el nombre: " + nombre);
+		}
+	}
+
+	private static void pagarCuenta(Restaurante restaurante, Admin admin) {
+		mostrarPorPantalla("Lista de clientes");
+		Cliente[] clientes = restaurante.clientesQueDebenPagar();
+
+		if (clientes[0] != null) {
+			mostrarListaClientes(clientes);
+
+			int numeroMesa = ingresarEntero("Seleccione numero de mesa que va a pagar");
+
+			Cliente clienteMesa = restaurante.obtenerClientePorNumeroDeMesa(numeroMesa);
+			Camarero camarero = obtenerCamareroPorNumeroDeMesa(numeroMesa, admin);
+			if (clienteMesa != null) {
+				mostrarCliente(clienteMesa);
+				finalizarPago(restaurante, clienteMesa, camarero);
+			} else {
+				mostrarPorPantalla("Mesa no encontrada");
+			}
+		} else {
+			mostrarPorPantalla("No hay mesas disponibles.");
+		}
+	}
 
 	private static void finalizarPago(Restaurante restaurante, Cliente cliente, Camarero camarero) {
 
@@ -296,6 +296,121 @@ public class MainRestaurante {
 				mostrarPorPantalla("El pago no pudo ser efectuado, intente de nuevo");
 			}
 		} while (!yaPago);
+	}
+
+	// Ver propina del camarero
+
+	private static void propinaDeCamarero(Admin admin) {
+		// TODO Auto-generated method stub
+
+		for (int i = 0; i < admin.camareros().length; i++) {
+			if (admin.camareros()[i] != null) {
+				mostrarPorPantalla("Camarero:" + admin.camareros()[i].getNombre() + "\n");
+				mostrarPorPantalla("Propina:" + admin.camareros()[i].getPropina() + "\n");
+
+			}
+		}
+	}
+
+	private static void verTicketPorTipoDePago(Restaurante restaurante) {
+		// TODO Auto-generated method stub
+
+		for (int i = 1; i <= TipoPago.values().length; i++) {
+
+			mostrarPorPantalla(i + ")" + TipoPago.values()[i - 1]);
+
+		}
+
+		TipoPago metodoPago = metodoPago("Ingrese el tipo de pago");
+
+		Cliente[] clientes = restaurante.ticketDeClientePorTipoDepago(metodoPago);
+
+		if (clientes[0] != null) {
+			mostrarTicketClientes(clientes);
+		} else {
+			mostrarPorPantalla("Aun no existen tickets");
+		}
+	}
+
+	private static void verRecaucaionDelDia(Restaurante restaurante) {
+		// TODO Auto-generated method stub
+
+		mostrarPorPantalla("La recaudacion del dia es:$" + restaurante.recaudacionDelDia());
+
+	}
+
+	public static Camarero obtenerCamareroPorNumeroDeMesa(int numeroMesa, Admin admin) {
+
+		for (int i = 0; i < admin.camareros().length; i++) {
+			for (int j = 0; j < admin.camareros()[i].getNumeroDeMesa().length; j++) {
+				if (admin.camareros()[i] != null && admin.camareros()[i].getNumeroDeMesa()[j] == numeroMesa) {
+
+					return admin.camareros()[i];
+				}
+			}
+		}
+		return null;
+	}
+
+	private static int obtenerID() {
+		return (int) (Math.random() * 100) + 1;
+	}
+
+	private static TipoProducto obtenerTipoProducto(String mensaje) {
+		mostrarPorPantalla(mensaje);
+		String tipo = teclado.next().toUpperCase();
+		return TipoProducto.valueOf(tipo);
+	}
+
+	private static int ingresarEntero(String mensaje) {
+		mostrarPorPantalla(mensaje);
+
+		return teclado.nextInt();
+	}
+
+	private static String ingresarString(String mensaje) {
+		mostrarPorPantalla(mensaje);
+
+		return teclado.next();
+	}
+
+	public static TipoPago metodoPago(String mensaje) {
+		mostrarPorPantalla(mensaje);
+		int num = teclado.nextInt();
+		return TipoPago.values()[num - 1];
+	}
+
+	public static MenuPrincipal menuPrincipal() {
+
+		for (int i = 1; i <= MenuPrincipal.values().length; i++) {
+			mostrarPorPantalla(i + ")" + MenuPrincipal.values()[i - 1]);
+		}
+
+		int num = teclado.nextInt();
+
+		if (num > MenuPrincipal.values().length) {
+			return MenuPrincipal.SALIR;
+		}
+		return MenuPrincipal.values()[num - 1];
+	}
+
+	public static MenuCamarero menuCamarero(String mensaje) {
+		mostrarPorPantalla(mensaje);
+		int num = teclado.nextInt();
+		if (num > MenuCamarero.values().length) {
+			return MenuCamarero.SALIR;
+		}
+		return MenuCamarero.values()[num - 1];
+	}
+
+	public static MenuAdmin menuAdmin(String mensaje) {
+		mostrarPorPantalla(mensaje);
+		int num = teclado.nextInt();
+
+		if (num > MenuAdmin.values().length) {
+			return MenuAdmin.ATRAS;
+		}
+		return MenuAdmin.values()[num - 1];
 	}
 
 	private static void mostrarMenu() {
@@ -355,57 +470,6 @@ public class MainRestaurante {
 
 	private static void mostrarPorPantalla(String mensaje) {
 		System.out.println(mensaje);
-	}
-
-	private static int ingresarEntero(String mensaje) {
-		mostrarPorPantalla(mensaje);
-
-		return teclado.nextInt();
-	}
-
-	private static String ingresarString(String mensaje) {
-		mostrarPorPantalla(mensaje);
-
-		return teclado.next();
-	}
-
-	public static TipoPago metodoPago(String mensaje) {
-		mostrarPorPantalla(mensaje);
-		int num = teclado.nextInt();
-		return TipoPago.values()[num - 1];
-	}
-
-	public static MenuPrincipal menuPrincipal() {
-
-		for (int i = 1; i <= MenuPrincipal.values().length; i++) {
-			mostrarPorPantalla(i + ")" + MenuPrincipal.values()[i - 1]);
-		}
-
-		int num = teclado.nextInt();
-
-		if (num > MenuPrincipal.values().length) {
-			return MenuPrincipal.SALIR;
-		}
-		return MenuPrincipal.values()[num - 1];
-	}
-
-	public static MenuCamarero menuCamarero(String mensaje) {
-		mostrarPorPantalla(mensaje);
-		int num = teclado.nextInt();
-		if (num > MenuCamarero.values().length) {
-			return MenuCamarero.SALIR;
-		}
-		return MenuCamarero.values()[num - 1];
-	}
-
-	public static MenuAdmin menuAdmin(String mensaje) {
-		mostrarPorPantalla(mensaje);
-		int num = teclado.nextInt();
-
-		if (num > MenuAdmin.values().length) {
-			return MenuAdmin.ATRAS;
-		}
-		return MenuAdmin.values()[num - 1];
 	}
 
 	private static void agregarCamarerosAleatoriamente(Admin admin) {

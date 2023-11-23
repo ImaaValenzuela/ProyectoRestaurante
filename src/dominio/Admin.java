@@ -56,8 +56,18 @@ public class Admin {
 		}
 		return seDespidio;
 	}
+	
+	
 
-	public Camarero[] mostrarCamarero() {
+	public Camarero[] getCamarero() {
+		return camarero;
+	}
+
+	public void setCamarero(Camarero[] camarero) {
+		this.camarero = camarero;
+	}
+
+	public Camarero[] camareros() {
 		Camarero[] camareros = new Camarero[this.camarero.length];
 
 		for (int i = 0; i < this.camarero.length; i++) {

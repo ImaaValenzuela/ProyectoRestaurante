@@ -23,6 +23,18 @@ public class Restaurante {
 		this.nombreRestaurant = nombreRestaurant;
 	}
 
+	public Cliente[] getCliente() {
+		return cliente;
+	}
+
+	public Menu[] getMenu() {
+		return menu;
+	}
+
+	public Menu[] getMenuVentas() {
+		return menuVentas;
+	}
+
 	public boolean nuevoCliente(Cliente cliente) {
 		boolean seAgrego = false;
 		int contador = 0;
@@ -67,23 +79,34 @@ public class Restaurante {
 
 	}
 
-	public void agregarVentaDePlatos(Menu menu) {
-
+	public boolean agregarPlato(Menu plato) {
 		boolean seAgrego = false;
 		int contador = 0;
 
-		while (!seAgrego && contador < this.menuVentas.length) {
-			if (this.menuVentas[contador] == null) {
-				this.menuVentas[contador] = menu;
+		while (!seAgrego && contador < this.menu.length) {
+			if (this.menu[contador] == null) {
+				this.menu[contador] = plato;
 				seAgrego = true;
 			}
 			contador++;
 		}
 
+		return seAgrego;
 	}
 
-	public Menu[] getMenuVentas() {
-		return menuVentas;
+	public boolean eliminarPlatoPorId(int id) {
+		boolean seElimino = false;
+		int contador = 0;
+
+		while (!seElimino && contador < this.menu.length) {
+			if (this.menu[contador] != null && this.menu[contador].getId() == id) {
+				this.menu[contador] = null;
+				seElimino = true;
+			}
+			contador++;
+		}
+
+		return seElimino;
 	}
 
 	public Cliente[] ticketDeClientePorTipoDepago(TipoPago tipoPago) {
@@ -112,35 +135,6 @@ public class Restaurante {
 
 		return montoObtenido;
 
-	}
-
-	public int obtenerNumeroDeMesa() {
-		int numeroDeMesa = (int) (Math.random() * 10) + 5;
-		numeroDeMesa = verificarNumeroDeMesa(numeroDeMesa);
-		return numeroDeMesa;
-	}
-
-	public int verificarNumeroDeMesa(int numeroDeMesa) {
-		boolean yaExiste = false;
-		int contador = 0;
-		int nuevoNumeroDeMesa = numeroDeMesa;
-
-		while (!yaExiste && contador < this.menu.length) {
-			if (this.cliente[contador] != null && this.cliente[contador].getNumeroMesa() == nuevoNumeroDeMesa) {
-				yaExiste = true;
-			}
-			contador++;
-		}
-
-		// Si el ID ya existe, buscar un nuevo ID único
-
-		if (yaExiste) {
-
-			nuevoNumeroDeMesa = obtenerNumeroDeMesa();
-
-		}
-
-		return nuevoNumeroDeMesa;
 	}
 
 	public Cliente obtenerClientePorNumeroDeMesa(int id) {
@@ -190,29 +184,38 @@ public class Restaurante {
 		return nuevoID;
 	}
 
-	public Cliente[] getCliente() {
-		return cliente;
-	}
+	public Cliente[] clientesQueDebenPagar() {
 
-	public Menu[] getMenu() {
-		return menu;
+		Cliente[] clientes = new Cliente[this.cliente.length];
+		int contador = 0;
+		for (int i = 0; i < this.cliente.length; i++) {
+
+			if (this.cliente[i] != null && !this.cliente[i].isEstadoDePago()) {
+				clientes[contador] = this.cliente[i];
+				contador++;
+			}
+
+		}
+
+		return clientes;
+
 	}
 
 	public Menu[] ordenarMenuDeVentasPorPrecioAscendente() {
 
-		Menu[] menu = this.menu.clone();
-		for (int i = 0; i < this.menu.length; i++) {
+		for (int i = 0; i < this.menuVentas.length; i++) {
 			for (int j = 0; j < this.menu.length - 1; j++) {
 
-				if (menu[j] != null && menu[j + 1] != null && menu[j].getPrecio() > menu[j + 1].getPrecio()) {
-					Menu aux = menu[j];
-					menu[j] = menu[j + 1];
-					menu[j + 1] = aux;
+				if (this.menuVentas[j] != null && this.menuVentas[j + 1] != null
+						&& this.menuVentas[j].getPrecio() > this.menuVentas[j + 1].getPrecio()) {
+					Menu aux = this.menuVentas[j];
+					this.menuVentas[j] = this.menuVentas[j + 1];
+					this.menuVentas[j + 1] = aux;
 				}
 
 			}
 		}
-		return menu;
+		return this.menuVentas;
 	}
 
 	public Menu[] obtenerMenuDeVentasPorProduco(TipoProducto tipoProducto) {
@@ -220,8 +223,8 @@ public class Restaurante {
 		Menu[] menu = new Menu[this.menu.length];
 		int contador = 0;
 		for (int i = 0; i < this.menu.length; i++) {
-			if (this.menu[i] != null && this.menu[i].getTipoProducto().equals(tipoProducto)) {
-				menu[contador] = this.menu[i];
+			if (this.menuVentas[i] != null && this.menuVentas[i].getTipoProducto().equals(tipoProducto)) {
+				menu[contador] = this.menuVentas[i];
 				contador++;
 			}
 
@@ -283,50 +286,30 @@ public class Restaurante {
 
 	}
 
+	private void agregarVenta(Cliente cliente) {
+		int posicion = 0;
+		for (int i = 0; i < this.menuVentas.length && posicion < cliente.getMenu().length; i++) {
+			if (this.menuVentas[i] == null && cliente.getMenu()[posicion] != null) {
+				this.menuVentas[i] = cliente.getMenu()[posicion];
+				posicion++;
+			}
+		}
+		posicion = 0;
+	}
+
 	public boolean realizarPago(Cliente cliente, double monto, Camarero camarero) {
 
 		if (monto >= cliente.getMontoAPagar()) {
 			double propina = monto - cliente.getMontoAPagar();
-			camarero.recibirPropina(propina);
+
+			if (cliente.getTipoPago().equals(TipoPago.EFECTIVO)) {
+				camarero.recibirPropina(propina);
+			}
+			agregarVenta(cliente);
 			return true;
 		}
 		return false;
 	}
 
-	public String ventasDelDia() {
-		StringBuilder ventasDelDia = new StringBuilder();
-
-		return ventasDelDia.toString();
-	}
-	
-    public boolean agregarPlato(Menu plato) {
-        boolean seAgrego = false;
-        int contador = 0;
-
-        while (!seAgrego && contador < this.menu.length) {
-            if (this.menu[contador] == null) {
-                this.menu[contador] = plato;
-                seAgrego = true;
-            }
-            contador++;
-        }
-
-        return seAgrego;
-    }
-
-    public boolean eliminarPlatoPorId(int id) {
-        boolean seElimino = false;
-        int contador = 0;
-
-        while (!seElimino && contador < this.menu.length) {
-            if (this.menu[contador] != null && this.menu[contador].getId() == id) {
-                this.menu[contador] = null;
-                seElimino = true;
-            }
-            contador++;
-        }
-
-        return seElimino;
-    }
-
 }
+
